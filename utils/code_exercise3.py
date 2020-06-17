@@ -3,21 +3,16 @@ import matplotlib.pyplot as plt
 from scipy.linalg import solve_toeplitz, toeplitz
 from scipy.signal import freqz, lfilter
 
-def autocorrelation(x):
-    xp = np.fft.ifftshift((x - np.average(x))/np.std(x))
-    n, = xp.shape
-    xp = np.r_[xp[:n//2], np.zeros_like(xp), xp[n//2:]]
-    f = np.fft.fft(xp)
-    p = np.absolute(f)**2
-    pi = np.fft.ifft(p)
-    return np.real(pi)[:n//2]/(np.arange(n//2)[::-1]+n//2)
-
 def get_a_vector(seg, m_length=12):
-    corr = autocorrelation(seg)
-    m = corr[:m_length]
-    R = -toeplitz(m[:m_length-1])
-    a = solve_toeplitz((R[:,0]), m[1:])
-    return a
+    autocorrelation = np.correlate(seg, seg, 'full')
+
+    num_samples = seg.shape[0]
+    zero_idx = num_samples-1
+    M_idx = zero_idx+m_length+1
+
+    lp_coeffs = solve_toeplitz(-autocorrelation[zero_idx:M_idx-1], autocorrelation[zero_idx+1:M_idx])
+
+    return lp_coeffs
 
 def get_b0(resp): # to adjust Hz
     energy = np.power(resp, 2).sum()
