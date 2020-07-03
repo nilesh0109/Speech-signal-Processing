@@ -53,6 +53,7 @@ def compute_stft(v_signal: np.ndarray, sampling_rate: int, frame_length: int, fr
     freqs = np.fft.fftfreq(n_length)
 
     m_stft = np.fft.fft(seg_windows)[:,:(n_length//2 +1)] # consider only lower half of the spectrum
+    m_stft +=  np.finfo(np.float64).eps # avoid 0
 
     v_freq = freqs[:n_length//2] * sampling_rate
 
