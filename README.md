@@ -1,3 +1,1 @@
-# Group7
-
-Kavish Bhatia, Nilesh VIjayrania,  Christoper Wulur
+Speech signal process coursework
